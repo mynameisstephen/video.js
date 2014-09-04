@@ -111,7 +111,6 @@ vjs.MenuButton = vjs.Button.extend({
       this.hide();
     }
 
-    this.on('keyup', this.onKeyPress);
     this.el_.setAttribute('aria-haspopup', true);
     this.el_.setAttribute('role', 'button');
   }
@@ -158,14 +157,6 @@ vjs.MenuButton.prototype.buildCSSClass = function(){
   return this.className + ' vjs-menu-button ' + vjs.Button.prototype.buildCSSClass.call(this);
 };
 
-// Focus - Add keyboard functionality to element
-// This function is not needed anymore. Instead, the keyboard functionality is handled by
-// treating the button as triggering a submenu. When the button is pressed, the submenu
-// appears. Pressing the button again makes the submenu disappear.
-vjs.MenuButton.prototype.onFocus = function(){};
-// Can't turn off list display that we turned on with focus, because list would go away.
-vjs.MenuButton.prototype.onBlur = function(){};
-
 vjs.MenuButton.prototype.onClick = function(){
   // When you click the button it adds focus, which will show the menu indefinitely.
   // So we'll remove focus when the mouse leaves the button.
@@ -200,6 +191,8 @@ vjs.MenuButton.prototype.onKeyPress = function(event){
 };
 
 vjs.MenuButton.prototype.pressButton = function(){
+  this.on('keydown', this.onKeyPress);
+
   this.buttonPressed_ = true;
   this.menu.lockShowing();
   this.el_.setAttribute('aria-pressed', true);
@@ -209,8 +202,9 @@ vjs.MenuButton.prototype.pressButton = function(){
 };
 
 vjs.MenuButton.prototype.unpressButton = function(){
+  this.off('keydown', this.onKeyPress);
+
   this.buttonPressed_ = false;
   this.menu.unlockShowing();
   this.el_.setAttribute('aria-pressed', false);
 };
-
